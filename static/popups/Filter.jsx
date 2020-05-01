@@ -37,7 +37,7 @@ class ReactFilter extends React.Component {
         this.setState({ error: data.error, traceback: data.traceback });
         return;
       }
-      if (_.startsWith(window.location.pathname, "/dtale/popup/filter")) {
+      if (_.includes(window.location.pathname, "/dtale/popup/filter")) {
         window.opener.location.reload();
         window.close();
       } else {
@@ -56,7 +56,7 @@ class ReactFilter extends React.Component {
           [prop]: _.pickBy(filters, (_, k) => k !== col),
         };
         serverState.updateSettings(updatedSettings, dataId, () => {
-          if (_.startsWith(window.location.pathname, "/dtale/popup/filter")) {
+          if (_.includes(window.location.pathname, "/dtale/popup/filter")) {
             window.opener.location.reload();
           } else {
             this.props.chartData.propagateState(updatedSettings, () => this.setState(updatedSettings));
@@ -155,7 +155,7 @@ class ReactFilter extends React.Component {
   render() {
     const clear = () => {
       serverState.updateSettings({ query: "" }, this.props.dataId, () => {
-        if (_.startsWith(window.location.pathname, "/dtale/popup/filter")) {
+        if (_.includes(window.location.pathname, "/dtale/popup/filter")) {
           window.opener.location.reload();
           window.close();
         } else {

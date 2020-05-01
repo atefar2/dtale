@@ -12,7 +12,7 @@ import { fetchJson } from "../../fetcher";
 import { buildButton } from "../../toggleUtils";
 import { renderCodePopupAnchor } from "../CodePopup";
 
-const BASE_DESCRIBE_URL = "/dtale/describe";
+const BASE_DESCRIBE_URL = buildURLString("/dtale/describe");
 
 class Details extends React.Component {
   constructor(props) {

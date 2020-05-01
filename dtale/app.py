@@ -86,7 +86,7 @@ class DtaleFlask(Flask):
     :param kwargs: Optional keyword arguments to be passed to :class:`flask:flask.Flask`
     """
 
-    def __init__(self, import_name, reaper_on=True, url=None, *args, **kwargs):
+    def __init__(self, import_name, reaper_on=True, url=None, app_root=None, *args, **kwargs):
         """
         Constructor method
         :param reaper_on: whether to run auto-reaper subprocess
@@ -97,7 +97,20 @@ class DtaleFlask(Flask):
         self.base_url = url
         self.shutdown_url = build_shutdown_url(url)
         self.port = None
+        self.app_root = app_root
         super(DtaleFlask, self).__init__(import_name, *args, **kwargs)
+
+    def update_template_context(self, context):
+        super(DtaleFlask, self).update_template_context(context)
+        if self.app_root is not None:
+            context['url_for'] = self.url_for
+
+    def url_for(self, endpoint, *args, **kwargs):
+        if self.app_root is not None and endpoint == 'static':
+            if 'filename' in kwargs:
+                return self.app_root + '/' + kwargs["filename"]
+            return self.app_root + '/' + args[0]
+        return url_for(endpoint, *args, **kwargs)
 
     def run(self, *args, **kwargs):
         """
@@ -172,7 +185,7 @@ class DtaleFlask(Flask):
         return super(DtaleFlask, self).get_send_file_max_age(name)
 
 
-def build_app(url, host=None, reaper_on=True, hide_shutdown=False, github_fork=False):
+def build_app(url, host=None, reaper_on=True, hide_shutdown=False, github_fork=False, app_root=None):
     """
     Builds :class:`flask:flask.Flask` application encapsulating endpoints for D-Tale's front-end
 
@@ -180,13 +193,19 @@ def build_app(url, host=None, reaper_on=True, hide_shutdown=False, github_fork=F
     :rtype: :class:`dtale.app.DtaleFlask`
     """
 
-    app = DtaleFlask('dtale', reaper_on=reaper_on, static_url_path='', url=url, instance_relative_config=False)
+    app = DtaleFlask('dtale', reaper_on=reaper_on, static_url_path='', url=url, instance_relative_config=False,
+                     app_root=app_root)
     app.config['SECRET_KEY'] = 'Dtale'
     app.config['HIDE_SHUTDOWN'] = hide_shutdown
     app.config['GITHUB_FORK'] = github_fork
 
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
+
+    if app_root is not None:
+        app.config['APPLICATION_ROOT'] = app_root
+        app.jinja_env.globals['url_for'] = app.url_for
+
     app.register_blueprint(dtale)
 
     compress = Compress()
@@ -209,7 +228,7 @@ def build_app(url, host=None, reaper_on=True, hide_shutdown=False, github_fork=F
 
         :return: image/png
         """
-        return redirect(url_for('static', filename='images/favicon.ico'))
+        return redirect(app.url_for('static', filename='images/favicon.ico'))
 
     @app.route('/missing-js')
     def missing_js():
@@ -299,7 +318,7 @@ def build_app(url, host=None, reaper_on=True, hide_shutdown=False, github_fork=F
             # Filter out rules we can't navigate to in a browser
             # and rules that require parameters
             if "GET" in rule.methods and has_no_empty_params(rule):
-                url = url_for(rule.endpoint, **(rule.defaults or {}))
+                url = app.url_for(rule.endpoint, **(rule.defaults or {}))
                 links.append((url, rule.endpoint))
         return jsonify(links)
 
@@ -406,7 +425,7 @@ def find_free_port():
 
 def show(data=None, host=None, port=None, name=None, debug=False, subprocess=True, data_loader=None,
          reaper_on=True, open_browser=False, notebook=False, force=False, context_vars=None, ignore_duplicate=False,
-         **kwargs):
+         app_root=None, **kwargs):
     """
     Entry point for kicking off D-Tale :class:`flask:flask.Flask` process from python process
 
@@ -483,8 +502,12 @@ def show(data=None, host=None, port=None, name=None, debug=False, subprocess=Tru
                 thread.setDaemon(True)
                 thread.start()
 
+            final_app_root = app_root
+            if final_app_root is not None:
+                final_app_root = '{}/{}'.format(final_app_root, ACTIVE_PORT)
+
             def _start():
-                app = build_app(url, reaper_on=reaper_on, host=ACTIVE_HOST)
+                app = build_app(url, reaper_on=reaper_on, host=ACTIVE_HOST, app_root=final_app_root)
                 if debug and not USE_NGROK:
                     app.jinja_env.auto_reload = True
                     app.config['TEMPLATES_AUTO_RELOAD'] = True

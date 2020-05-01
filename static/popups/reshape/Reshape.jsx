@@ -77,7 +77,7 @@ class ReactReshape extends React.Component {
         return;
       }
       this.setState({ loadingReshape: false }, () => {
-        if (_.startsWith(window.location.pathname, "/dtale/popup/reshape")) {
+        if (_.includes(window.location.pathname, "/dtale/popup/reshape")) {
           window.opener.location.assign(buildForwardURL(window.opener.location.href, data.data_id));
           window.close();
           return;

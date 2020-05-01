@@ -44,6 +44,16 @@ class DtaleDash(dash.Dash):
             '/dash/components_bundle.js', '/dash/custom_bundle.js', '/dist/base_styles_bundle.js'
         ]
 
+        if server.app_root is not None:
+
+            def _prepend_app_root(v):
+                return '{}{}'.format(server.app_root, v)
+            kwargs['requests_pathname_prefix'] = _prepend_app_root(kwargs['routes_pathname_prefix'])
+            kwargs['external_stylesheets'] = [_prepend_app_root(v) for v in kwargs['external_stylesheets']]
+            kwargs['external_scripts'] = [_prepend_app_root(v) for v in kwargs['external_scripts']]
+            kwargs['assets_url_path'] = _prepend_app_root('')
+            kwargs['assets_external_path'] = _prepend_app_root('/assets')
+
         super(DtaleDash, self).__init__(*args, **kwargs)
 
     def interpolate_index(self, **kwargs):

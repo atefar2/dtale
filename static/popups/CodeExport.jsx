@@ -2,11 +2,11 @@ import PropTypes from "prop-types";
 import React from "react";
 
 import { RemovableError } from "../RemovableError";
-import { buildURL } from "../actions/url-utils";
+import { buildURL, buildURLString } from "../actions/url-utils";
 import { fetchJson } from "../fetcher";
 import { CodePopup } from "./CodePopup";
 
-const BASE_CODE_URL = "/dtale/code-export";
+const BASE_CODE_URL = buildURLString("/dtale/code-export");
 
 class CodeExport extends React.Component {
   constructor(props) {

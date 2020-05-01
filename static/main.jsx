@@ -22,7 +22,7 @@ import { createStore } from "./reducers/store";
 const settingsElem = document.getElementById("settings");
 const settings = settingsElem ? JSON.parse(settingsElem.value) : {};
 
-if (_.startsWith(window.location.pathname, "/dtale/popup")) {
+if (_.includes(window.location.pathname, "/dtale/popup")) {
   require("./dtale/DataViewer.css");
 
   let rootNode = null;
@@ -62,7 +62,7 @@ if (_.startsWith(window.location.pathname, "/dtale/popup")) {
       break;
   }
   ReactDOM.render(rootNode, document.getElementById("popup-content"));
-} else if (_.startsWith(window.location.pathname, "/dtale/code-popup")) {
+} else if (_.includes(window.location.pathname, "/dtale/code-popup")) {
   require("./dtale/DataViewer.css");
   document.getElementById("code-title").innerHTML = `${window.opener.code_popup.title} Code Export`;
   ReactDOM.render(<CodePopup code={window.opener.code_popup.code} />, document.getElementById("popup-content"));

@@ -133,7 +133,7 @@ class ReactDataViewer extends React.Component {
       this.setState({ loading: false });
       return; // I've seen issues with react-virtualized where it will get into this method without parameters
     }
-    const url = buildURLString(`/dtale/data/${this.props.dataId}?`, params);
+    const url = buildURLString(`../../dtale/data/${this.props.dataId}?`, params);
     fetchJsonPromise(url)
       .then(data => {
         const formattedData = _.mapValues(data.results, d =>

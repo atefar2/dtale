@@ -29,8 +29,12 @@ function buildURLParams(state, props = null, required = null) {
   return _.pickBy(params, _.identity);
 }
 
-function buildURLString(base, params) {
-  return `${base}${base.endsWith("?") ? "" : "?"}${qs.stringify(params)}`;
+function buildURLString(base, params = null) {
+  const finalBase = _.startsWith(base, "../../") ? base : `../..${base}`;
+  if (_.isNil(params)) {
+    return finalBase;
+  }
+  return `${finalBase}${base.endsWith("?") ? "" : "?"}${qs.stringify(params)}`;
 }
 
 function buildURL(base, state, props) {
@@ -39,11 +43,11 @@ function buildURL(base, state, props) {
 }
 
 function dtypesUrl(dataId) {
-  return `/dtale/dtypes/${dataId}`;
+  return buildURLString(`/dtale/dtypes/${dataId}`);
 }
 
 function saveColFilterUrl(dataId, column) {
-  return `/dtale/save-column-filter/${dataId}/${column}`;
+  return buildURLString(`/dtale/save-column-filter/${dataId}/${column}`);
 }
 
 export { buildURLParams, buildURLString, buildURL, dtypesUrl, saveColFilterUrl };

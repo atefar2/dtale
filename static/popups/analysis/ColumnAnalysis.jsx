@@ -7,7 +7,7 @@ import { connect } from "react-redux";
 
 import { RemovableError } from "../../RemovableError";
 import actions from "../../actions/dtale";
-import { buildURLParams } from "../../actions/url-utils";
+import { buildURLParams, buildURLString } from "../../actions/url-utils";
 import chartUtils from "../../chartUtils";
 import { fetchJson } from "../../fetcher";
 import { ColumnAnalysisFilters } from "./ColumnAnalysisFilters";
@@ -15,7 +15,7 @@ import { createChart } from "./columnAnalysisUtils";
 
 require("./ColumnAnalysis.css");
 
-const BASE_ANALYSIS_URL = "/dtale/column-analysis";
+const BASE_ANALYSIS_URL = buildURLString("/dtale/column-analysis");
 
 class ReactColumnAnalysis extends React.Component {
   constructor(props) {

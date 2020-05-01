@@ -1,5 +1,7 @@
 import _ from "lodash";
 
+import { buildURLString } from "../actions/url-utils";
+
 function updateSort(selectedCols, dir, { sortInfo, propagateState }) {
   let updatedSortInfo = _.filter(sortInfo, ([col, _dir]) => !_.includes(selectedCols, col));
   switch (dir) {
@@ -33,7 +35,7 @@ function buildStyling(val, colType, styleProps) {
 }
 
 function fullPath(path, dataId = null) {
-  return dataId ? `${path}/${dataId}` : path;
+  return buildURLString(dataId ? `${path}/${dataId}` : path);
 }
 
 function open(path, dataId, height = 450, width = 500) {
