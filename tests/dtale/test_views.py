@@ -763,7 +763,7 @@ def test_reshape(custom_data, unittest):
             assert len(data.keys()) == 2
             unittest.assertEqual(
                 [d['name'] for d in dtypes[new_key]],
-                ['{} 00:00:00 100000'.format(min_date), '{} 00:00:00 100001'.format(min_date)]
+                ['index', '{} 00:00:00 100000'.format(min_date), '{} 00:00:00 100001'.format(min_date)]
             )
             assert len(data[new_key]) == 1
             assert settings[new_key].get('startup_code') is not None

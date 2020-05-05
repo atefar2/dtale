@@ -464,7 +464,13 @@ def format_data(data):
         data = data.to_frame(index=False)
 
     index = [str(i) for i in make_list(data.index.name or data.index.names) if i is not None]
-    data = data.reset_index().drop('index', axis=1, errors='ignore')
+    drop = True
+    if not len(index) and not data.index.equals(pd.RangeIndex(0, len(data))):
+        drop = False
+        index = ['index']
+    data = data.reset_index()
+    if drop:
+        data = data.drop('index', axis=1, errors='ignore')
     data.columns = [str(c) for c in data.columns]
     return data, index
 

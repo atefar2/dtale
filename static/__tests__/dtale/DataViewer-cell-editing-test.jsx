@@ -90,21 +90,23 @@ describe("DataViewer tests", () => {
     await tick();
     result.update();
     const cellIdx = result.find(GridCell).last().find("div").prop("cell_idx");
-    result
-      .find(ReactDataViewer)
-      .instance()
-      .doubleClickCell({
-        target: { attributes: { cell_idx: { nodeValue: cellIdx } } },
-      });
+    let instance = result.find(ReactDataViewer).instance();
+    instance.handleClicks({
+      target: { attributes: { cell_idx: { nodeValue: cellIdx } } },
+    });
+    instance.handleClicks({
+      target: { attributes: { cell_idx: { nodeValue: cellIdx } } },
+    });
     result.update();
     let cellEditor = result.find(GridCellEditor).first();
     cellEditor.instance().onKeyDown({ key: "Escape" });
-    result
-      .find(ReactDataViewer)
-      .instance()
-      .doubleClickCell({
-        target: { attributes: { cell_idx: { nodeValue: cellIdx } } },
-      });
+    instance = result.find(ReactDataViewer).instance();
+    instance.handleClicks({
+      target: { attributes: { cell_idx: { nodeValue: cellIdx } } },
+    });
+    instance.handleClicks({
+      target: { attributes: { cell_idx: { nodeValue: cellIdx } } },
+    });
     result.update();
     cellEditor = result.find(GridCellEditor).first();
     cellEditor.find("input").simulate("change", { target: { value: "20000101" } });
